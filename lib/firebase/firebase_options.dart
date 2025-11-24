@@ -73,6 +73,7 @@ class DefaultFirebaseOptions {
     projectId: 'study-planner-ufscar',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
     iosBundleId: 'com.example.studyPlanner',
+
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,9 +76,38 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     Future<void> handleLogin() async {
       try {
-        final username = _usernameController.text.trim();
         final email = _emailController.text.trim();
         final password = _passwordController.text.trim();
+
+        // Validate mandatory fields
+        if (email.isEmpty) {
+          showErrorToast(
+            context: context,
+            title: translate("error"),
+            content: 'Email é obrigatório',
+          );
+          return;
+        }
+
+        if (password.isEmpty) {
+          showErrorToast(
+            context: context,
+            title: translate("error"),
+            content: 'Senha é obrigatória',
+          );
+          return;
+        }
+
+        // Validate email format
+        final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+        if (!emailRegex.hasMatch(email)) {
+          showErrorToast(
+            context: context,
+            title: translate("error"),
+            content: 'Email inválido',
+          );
+          return;
+        }
 
         var user = await AuthModel().sign(
           email: email,
@@ -87,32 +117,51 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         );
 
         if (user != null) {
-          if (_mode == LoginMode.signIn) {
-            Navigator.of(context).pushReplacementNamed('/main');
-          } else {
-            showSuccessToast(
-              context: context,
-              title: translate("success"),
-              content: translate("user-created"),
-            );
+          showSuccessToast(
+            context: context,
+            title: translate("success"),
+            content: 'Login realizado com sucesso!',
+          );
 
-            user.updateDisplayName(username);
-            setState(() => _mode = LoginMode.signIn);
+          // Navigate to main after successful login
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/main');
           }
         } else {
           showErrorToast(
             context: context,
             title: translate("error"),
-            content: translate("wrong-user-or-password"),
+            content: 'Email ou senha inválidos. Verifique seus dados.',
           );
         }
+      } on FirebaseAuthException catch (authError) {
+        String errorMessage = 'Erro ao fazer login';
+
+        if (authError.code == 'user-not-found') {
+          errorMessage = 'Usuário não encontrado. Faça o cadastro primeiro.';
+        } else if (authError.code == 'wrong-password') {
+          errorMessage = 'Senha incorreta. Tente novamente.';
+        } else if (authError.code == 'invalid-email') {
+          errorMessage = 'Email inválido.';
+        } else if (authError.code == 'user-disabled') {
+          errorMessage = 'Usuário desativado. Entre em contato com o suporte.';
+        } else if (authError.code == 'too-many-requests') {
+          errorMessage = 'Muitas tentativas de login. Tente mais tarde.';
+        }
+
+        showErrorToast(
+          context: context,
+          title: translate("error"),
+          content: errorMessage,
+        );
       } catch (e) {
         if (kDebugMode) print("Error during authentication: $e");
 
         showErrorToast(
           context: context,
           title: translate("error"),
-          content: translate("something-wrong"),
+          content: 'Erro ao conectar: ${e.toString()}',
         );
       }
     }
@@ -323,11 +372,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               width: double.infinity,
                               height: 64,
                               child: OutlinedButton(
-                                onPressed: () => {
-                                  Navigator.of(
-                                    context,
-                                  ).pushReplacementNamed('/main'),
-                                },
+                                onPressed: handleLogin,
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: primaryColor,
                                   side: const BorderSide(

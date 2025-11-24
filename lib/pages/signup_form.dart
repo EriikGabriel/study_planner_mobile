@@ -1,11 +1,13 @@
 // Signup form component used by LoginPage when switching to sign-up mode
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:study_planner/helpers/toast_helper.dart';
 import 'package:study_planner/models/auth_model.dart';
+import 'package:study_planner/services/firebase_data_service.dart';
 import 'package:study_planner/services/ufscar_api_service.dart';
 import 'package:study_planner/theme/app_theme.dart';
 import 'package:study_planner/types/login.dart';
@@ -46,6 +48,27 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         : null;
   }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return translate('mandatory-field');
+    }
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Email inválido';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return translate('mandatory-field');
+    }
+    if (value.length < 6) {
+      return 'Senha deve ter pelo menos 6 caracteres';
+    }
+    return null;
+  }
+
   Future<void> _handleSignUp() async {
     final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
@@ -70,6 +93,16 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       return;
     }
 
+    // Validate email format
+    if (_validateEmail(email) != null) {
+      showErrorToast(
+        context: context,
+        title: translate('error'),
+        content: 'Email inválido',
+      );
+      return;
+    }
+
     if (password.isEmpty) {
       showErrorToast(
         context: context,
@@ -79,39 +112,21 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       return;
     }
 
+    // Validate password length
+    if (_validatePassword(password) != null) {
+      showErrorToast(
+        context: context,
+        title: translate('error'),
+        content: 'Senha deve ter pelo menos 6 caracteres',
+      );
+      return;
+    }
+
     // Show loading state
     setState(() => _isLoading = true);
 
     try {
-      // Call UFSCar API to login and fetch subjects
-      final apiResponse = await UFSCarAPIService.loginAndFetchSubjects(
-        email: email,
-        password: password,
-      );
-
-      if (!mounted) return;
-
-      if (apiResponse == null) {
-        showErrorToast(
-          context: context,
-          title: translate('error'),
-          content: 'Email ou senha inválidos. Verifique seus dados.',
-        );
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      // Parse subjects from response
-      final subjects = UFSCarAPIService.parseSubjects(apiResponse);
-
-      // Show subjects in dialog
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => SubjectsDialog(subjects: subjects),
-        );
-      }
-
+      // First, try to create the user in Firebase
       try {
         final user = await AuthModel().sign(
           email: email,
@@ -120,29 +135,103 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           ref: ref,
         );
 
-        if (user != null) {
-          if (username.isNotEmpty) user.updateDisplayName(username);
-
-          showSuccessToast(
-            context: context,
-            title: translate('success'),
-            content: translate('user-created'),
-          );
-
-          // Navigate to main after a short delay to allow dialog viewing
-          await Future.delayed(const Duration(seconds: 2));
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/main');
-          }
-        }
-      } catch (authError) {
-        if (mounted) {
+        if (user == null) {
+          if (!mounted) return;
           showErrorToast(
             context: context,
             title: translate('error'),
-            content: 'Erro ao registrar no aplicativo: $authError',
+            content: 'Email já cadastrado ou erro ao criar conta',
+          );
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        if (username.isNotEmpty) {
+          await user.updateDisplayName(username);
+        }
+
+        if (!mounted) return;
+
+        // Call UFSCar API to login and fetch subjects
+        final apiResponse = await UFSCarAPIService.loginAndFetchSubjects(
+          email: email,
+          password: password,
+        );
+
+        if (!mounted) return;
+
+        if (apiResponse == null) {
+          showErrorToast(
+            context: context,
+            title: translate('error'),
+            content: 'Email ou senha inválidos na plataforma UFSCar.',
+          );
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        // Parse subjects from response
+        final subjects = UFSCarAPIService.parseSubjects(apiResponse);
+
+        // Save user data to Firebase Realtime Database
+        final dataSaved = await FirebaseDataService.saveUserProfileAndDisciplines(
+          email: email,
+          displayName: username,
+          apiResponse: apiResponse,
+        );
+
+        if (!dataSaved) {
+          if (mounted) {
+            showErrorToast(
+              context: context,
+              title: translate('error'),
+              content: 'Erro ao salvar dados. Tente novamente.',
+            );
+          }
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        // Show subjects in dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => SubjectsDialog(subjects: subjects),
           );
         }
+
+        showSuccessToast(
+          context: context,
+          title: translate('success'),
+          content: translate('user-created'),
+        );
+
+        // Navigate to login after a short delay to allow dialog viewing
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
+      } on FirebaseAuthException catch (authError) {
+        if (!mounted) return;
+
+        String errorMessage = 'Erro ao registrar na conta';
+
+        if (authError.code == 'email-already-in-use') {
+          errorMessage = 'Este email já está cadastrado';
+        } else if (authError.code == 'invalid-email') {
+          errorMessage = 'Email inválido';
+        } else if (authError.code == 'weak-password') {
+          errorMessage = 'Senha muito fraca. Use pelo menos 6 caracteres';
+        } else if (authError.code == 'operation-not-allowed') {
+          errorMessage = 'Operação não permitida. Tente novamente mais tarde';
+        }
+
+        showErrorToast(
+          context: context,
+          title: translate('error'),
+          content: errorMessage,
+        );
+        setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
