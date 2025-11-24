@@ -47,6 +47,7 @@ class DefaultFirebaseOptions {
     projectId: 'study-planner-ufscar',
     authDomain: 'study-planner-ufscar.firebaseapp.com',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
+    databaseURL: 'https://study-planner-ufscar-default-rtdb.firebaseio.com'
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '509419060164',
     projectId: 'study-planner-ufscar',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
+    databaseURL: 'https://study-planner-ufscar-default-rtdb.firebaseio.com'
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -64,6 +66,7 @@ class DefaultFirebaseOptions {
     projectId: 'study-planner-ufscar',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
     iosBundleId: 'com.example.studyPlanner',
+    databaseURL: 'https://study-planner-ufscar-default-rtdb.firebaseio.com'
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +76,7 @@ class DefaultFirebaseOptions {
     projectId: 'study-planner-ufscar',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
     iosBundleId: 'com.example.studyPlanner',
-
+    databaseURL: 'https://study-planner-ufscar-default-rtdb.firebaseio.com'
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -83,5 +86,6 @@ class DefaultFirebaseOptions {
     projectId: 'study-planner-ufscar',
     authDomain: 'study-planner-ufscar.firebaseapp.com',
     storageBucket: 'study-planner-ufscar.firebasestorage.app',
+    databaseURL: 'https://study-planner-ufscar-default-rtdb.firebaseio.com'
   );
 }
