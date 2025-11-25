@@ -1,0 +1,15 @@
+{
+  "mandatory-field": "Mandatory Field!",
+  "success": "Success",
+  "user-created": "User Created",
+  "error": "Error",
+  "wrong-user-or-password": "Wrong user or password",
+  "something-wrong": "Something went wrong. Please try again",
+  "music-for-everyone": "Music for everyone",
+  "username": "Fullname",
+  "password": "Password",
+  "or": " OR ",
+  "continue-w-google": "Continue with Google",
+  "dont-have-account": "Don't have an account? ",
+  "already-have-account": "Already have an account? "
+}

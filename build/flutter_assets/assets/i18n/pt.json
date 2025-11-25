@@ -1,0 +1,15 @@
+{
+  "mandatory-field": "Campo obrigatório!",
+  "success": "Sucesso",
+  "user-created": "Usuário criado",
+  "error": "Erro",
+  "wrong-user-or-password": "Usuário ou senha incorretos",
+  "something-wrong": "Algo deu errado. Por favor, tente novamente",
+  "music-for-everyone": "Música para todos",
+  "username": "Nome completo",
+  "password": "Senha",
+  "or": " OU ",
+  "continue-w-google": "Continuar com o Google",
+  "dont-have-account": "Não tem uma conta? ",
+  "already-have-account": "Já tem uma conta? "
+}

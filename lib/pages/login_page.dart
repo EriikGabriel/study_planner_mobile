@@ -191,7 +191,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ],
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: Image.asset("/images/logo.png"),
+                  child: Image.asset("images/logo.png"),
                 ),
                 SizedBox(
                   width: 250,
