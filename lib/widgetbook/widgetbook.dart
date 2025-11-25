@@ -4,6 +4,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:study_planner/pages/activity_page.dart';
 import 'package:study_planner/pages/login_page.dart';
 import 'package:study_planner/pages/main_page.dart';
+import 'package:study_planner/pages/settings_page.dart';
 import 'package:study_planner/theme/app_theme.dart';
 import 'package:widgetbook/widgetbook.dart';
 
@@ -64,6 +65,15 @@ void main() async {
                     WidgetbookUseCase(
                       name: 'Default',
                       builder: (context) => const ActivityPage(),
+                    ),
+                  ],
+                ),
+                WidgetbookComponent(
+                  name: 'Settings Page',
+                  useCases: [
+                    WidgetbookUseCase(
+                      name: 'Default',
+                      builder: (context) => const SettingsPage(),
                     ),
                   ],
                 ),
