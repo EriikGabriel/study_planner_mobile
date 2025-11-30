@@ -223,19 +223,26 @@ class _ActivityPageState extends ConsumerState<ActivityPage> {
     final id = activity['id']?.toString();
     if (id == null) return;
 
+    final cs = Theme.of(context).colorScheme;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar'),
-        content: const Text('Deseja excluir esta atividade?'),
+        backgroundColor: Theme.of(ctx).brightness == Brightness.dark
+            ? Theme.of(ctx).cardColor
+            : cs.surface,
+        title: Text('Confirmar', style: TextStyle(color: cs.onSurface)),
+        content: Text(
+          'Deseja excluir esta atividade?',
+          style: TextStyle(color: cs.onSurface.withOpacity(0.9)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
+            child: Text('Cancelar', style: TextStyle(color: cs.onSurface)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Excluir'),
+            child: Text('Excluir', style: TextStyle(color: cs.primary)),
           ),
         ],
       ),
