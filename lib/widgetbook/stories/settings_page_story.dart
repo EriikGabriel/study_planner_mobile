@@ -5,7 +5,7 @@ import 'package:study_planner/providers/user_provider.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 // Mock User for Widgetbook
-class MockUser extends User {
+class MockUser implements User {
   @override
   String? get email => 'usuario@exemplo.com';
 
@@ -55,9 +55,10 @@ class MockUser extends User {
       throw UnimplementedError();
 
   @override
-  Future<ConfirmationResult> linkWithPhoneNumber(String phoneNumber,
-          [RecaptchaVerifier? verifier]) =>
-      throw UnimplementedError();
+  Future<ConfirmationResult> linkWithPhoneNumber(
+    String phoneNumber, [
+    RecaptchaVerifier? verifier,
+  ]) => throw UnimplementedError();
 
   @override
   Future<UserCredential> linkWithPopup(AuthProvider provider) =>
@@ -69,8 +70,8 @@ class MockUser extends User {
 
   @override
   Future<UserCredential> reauthenticateWithCredential(
-          AuthCredential credential) =>
-      throw UnimplementedError();
+    AuthCredential credential,
+  ) => throw UnimplementedError();
 
   @override
   Future<UserCredential> reauthenticateWithPopup(AuthProvider provider) =>
@@ -84,9 +85,9 @@ class MockUser extends User {
   Future<void> reload() => Future.value();
 
   @override
-  Future<void> sendEmailVerification(
-          [ActionCodeSettings? actionCodeSettings]) =>
-      throw UnimplementedError();
+  Future<void> sendEmailVerification([
+    ActionCodeSettings? actionCodeSettings,
+  ]) => throw UnimplementedError();
 
   @override
   Future<User> unlink(String providerId) => throw UnimplementedError();
@@ -95,8 +96,7 @@ class MockUser extends User {
   Future<void> updateEmail(String newEmail) => throw UnimplementedError();
 
   @override
-  Future<void> updatePassword(String newPassword) =>
-      throw UnimplementedError();
+  Future<void> updatePassword(String newPassword) => throw UnimplementedError();
 
   @override
   Future<void> updatePhoneNumber(PhoneAuthCredential phoneCredential) =>
@@ -107,12 +107,39 @@ class MockUser extends User {
       Future.value();
 
   @override
-  Future<void> verifyBeforeUpdateEmail(String newEmail,
-          [ActionCodeSettings? actionCodeSettings]) =>
-      throw UnimplementedError();
+  Future<void> verifyBeforeUpdateEmail(
+    String newEmail, [
+    ActionCodeSettings? actionCodeSettings,
+  ]) => throw UnimplementedError();
 
   @override
   MultiFactor get multiFactor => throw UnimplementedError();
+
+  @override
+  Future<UserCredential> linkWithProvider(AuthProvider provider) {
+    // TODO: implement linkWithProvider
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<UserCredential> reauthenticateWithProvider(AuthProvider provider) {
+    // TODO: implement reauthenticateWithProvider
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateDisplayName(String? displayName) {
+    // TODO: implement updateDisplayName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updatePhotoURL(String? photoURL) {
+    // TODO: implement updatePhotoURL
+    throw UnimplementedError();
+  }
+
+  // Add any other members required by the User interface
 }
 
 final settingsPageStory = WidgetbookComponent(
@@ -123,7 +150,9 @@ final settingsPageStory = WidgetbookComponent(
       builder: (context) {
         return ProviderScope(
           overrides: [
-            userProvider.overrideWith((ref) => UserNotifier()..setUser(MockUser())),
+            userProvider.overrideWith(
+              (ref) => UserNotifier()..setUser(MockUser()),
+            ),
           ],
           child: const SettingsPage(),
         );
@@ -133,9 +162,7 @@ final settingsPageStory = WidgetbookComponent(
       name: 'Sem Usuário (Logout)',
       builder: (context) {
         return ProviderScope(
-          overrides: [
-            userProvider.overrideWith((ref) => UserNotifier()),
-          ],
+          overrides: [userProvider.overrideWith((ref) => UserNotifier())],
           child: const SettingsPage(),
         );
       },

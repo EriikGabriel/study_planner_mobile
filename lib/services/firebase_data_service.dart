@@ -25,14 +25,112 @@ class FirebaseDataService {
     }
   }
 
-  /// Busca as matérias do usuário no Realtime Database
-  static Future<List<Map<String, dynamic>>> fetchUserSubjects(String email) async {
+  /// Salva uma atividade para o usuário no Realtime Database.
+  static Future<bool> saveUserActivity({
+    required String email,
+    required Map<String, dynamic> activity,
+  }) async {
     try {
-      if (kDebugMode) print('🔍 [Firebase] Buscando matérias do usuário: $email');
-      
+      final db = FirebaseDatabase.instance.ref();
+      final safeEmail = email.replaceAll('.', '_');
+      await db
+          .child('users')
+          .child(safeEmail)
+          .child('activities')
+          .push()
+          .set(activity);
+      return true;
+    } catch (e) {
+      print('Erro ao salvar atividade no Firebase: $e');
+      return false;
+    }
+  }
+
+  /// Busca as atividades do usuário (snapshot único). Retorna lista de maps.
+  static Future<List<Map<String, dynamic>>> fetchUserActivities(
+    String email,
+  ) async {
+    try {
+      final db = FirebaseDatabase.instance.ref();
+      final safeEmail = email.replaceAll('.', '_');
+      final snapshot = await db
+          .child('users')
+          .child(safeEmail)
+          .child('activities')
+          .get();
+      if (!snapshot.exists || snapshot.value == null) return [];
+
+      final Map data = snapshot.value as Map<dynamic, dynamic>;
+      final List<Map<String, dynamic>> activities = [];
+      data.forEach((key, value) {
+        if (value is Map) {
+          final item = Map<String, dynamic>.from(value);
+          item['id'] = key;
+          activities.add(item);
+        }
+      });
+
+      return activities;
+    } catch (e) {
+      print('Erro ao buscar atividades: $e');
+      return [];
+    }
+  }
+
+  /// Atualiza uma atividade existente (substitui os campos) pelo id.
+  static Future<bool> updateUserActivity({
+    required String email,
+    required String id,
+    required Map<String, dynamic> activity,
+  }) async {
+    try {
+      final db = FirebaseDatabase.instance.ref();
+      final safeEmail = email.replaceAll('.', '_');
+      await db
+          .child('users')
+          .child(safeEmail)
+          .child('activities')
+          .child(id)
+          .set(activity);
+      return true;
+    } catch (e) {
+      print('Erro ao atualizar atividade: $e');
+      return false;
+    }
+  }
+
+  /// Remove uma atividade pelo id.
+  static Future<bool> deleteUserActivity({
+    required String email,
+    required String id,
+  }) async {
+    try {
+      final db = FirebaseDatabase.instance.ref();
+      final safeEmail = email.replaceAll('.', '_');
+      await db
+          .child('users')
+          .child(safeEmail)
+          .child('activities')
+          .child(id)
+          .remove();
+      return true;
+    } catch (e) {
+      print('Erro ao deletar atividade: $e');
+      return false;
+    }
+  }
+
+  /// Busca as matérias do usuário no Realtime Database
+  static Future<List<Map<String, dynamic>>> fetchUserSubjects(
+    String email,
+  ) async {
+    try {
+      if (kDebugMode)
+        print('🔍 [Firebase] Buscando matérias do usuário: $email');
+
       final db = FirebaseDatabase.instance.ref();
       final safeEmail = email.replaceAll(".", "_");
-      
+
       final snapshot = await db
           .child('users')
           .child(safeEmail)
@@ -88,7 +186,10 @@ class FirebaseDataService {
         return inicioA.compareTo(inicioB);
       });
 
-      if (kDebugMode) print('✅ [Firebase] ${subjects.length} matérias encontradas e ordenadas');
+      if (kDebugMode)
+        print(
+          '✅ [Firebase] ${subjects.length} matérias encontradas e ordenadas',
+        );
       return subjects;
     } catch (e) {
       if (kDebugMode) print('❌ [Firebase] Erro ao buscar matérias: $e');

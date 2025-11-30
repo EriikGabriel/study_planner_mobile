@@ -1,9 +1,7 @@
-/// Exemplos de componentes bem estruturados para uso com Widgetbook
-/// Este arquivo demonstra padrões recomendados
+library;
 
 import 'package:flutter/material.dart';
 
-/// ✅ BOM: Componente com parâmetros opcionais para variação
 class ExemploComponenteBom extends StatelessWidget {
   final String titulo;
   final String? subtitulo;

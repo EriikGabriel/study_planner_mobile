@@ -28,30 +28,30 @@ class SettingsPage extends ConsumerWidget {
               children: [
                 // Header - Informações do usuário
                 _buildUserHeader(context, theme, user),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Seção de Aparência
                 _buildSectionTitle(context, theme, "Aparência"),
                 const SizedBox(height: 12),
                 _buildThemeToggle(context, theme, ref, isDarkMode),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Seção de Conta
                 _buildSectionTitle(context, theme, "Conta"),
                 const SizedBox(height: 12),
                 _buildAccountOptions(context, theme, user),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Seção de Sobre
                 _buildSectionTitle(context, theme, "Sobre"),
                 const SizedBox(height: 12),
                 _buildAboutOptions(context, theme),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Botão de Logout
                 _buildLogoutButton(context, theme, ref),
               ],
@@ -68,10 +68,7 @@ class SettingsPage extends ConsumerWidget {
       decoration: BoxDecoration(
         color: theme.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.primary.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: theme.primary.withOpacity(0.3), width: 1),
       ),
       child: Row(
         children: [
@@ -117,7 +114,11 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, ColorScheme theme, String title) {
+  Widget _buildSectionTitle(
+    BuildContext context,
+    ColorScheme theme,
+    String title,
+  ) {
     return Text(
       title,
       style: GoogleFonts.poppins(
@@ -170,23 +171,24 @@ class SettingsPage extends ConsumerWidget {
         ),
         subtitle: Text(
           isDarkMode ? 'Ativado' : 'Desativado',
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            color: theme.secondaryText,
-          ),
+          style: GoogleFonts.poppins(fontSize: 13, color: theme.secondaryText),
         ),
         trailing: Switch(
           value: isDarkMode,
           onChanged: (value) {
             ref.read(themeProvider.notifier).toggleTheme();
           },
-          activeColor: theme.primary,
+          activeThumbColor: theme.primary,
         ),
       ),
     );
   }
 
-  Widget _buildAccountOptions(BuildContext context, ColorScheme theme, User? user) {
+  Widget _buildAccountOptions(
+    BuildContext context,
+    ColorScheme theme,
+    User? user,
+  ) {
     return Column(
       children: [
         _buildSettingItem(
@@ -196,9 +198,9 @@ class SettingsPage extends ConsumerWidget {
           title: 'Editar Perfil',
           onTap: () {
             // TODO: Implementar edição de perfil
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Em desenvolvimento')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Em desenvolvimento')));
           },
         ),
         const SizedBox(height: 8),
@@ -209,9 +211,9 @@ class SettingsPage extends ConsumerWidget {
           title: 'Alterar Senha',
           onTap: () {
             // TODO: Implementar alteração de senha
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Em desenvolvimento')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Em desenvolvimento')));
           },
         ),
         const SizedBox(height: 8),
@@ -222,9 +224,9 @@ class SettingsPage extends ConsumerWidget {
           title: 'Notificações',
           onTap: () {
             // TODO: Implementar configurações de notificações
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Em desenvolvimento')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Em desenvolvimento')));
           },
         ),
       ],
@@ -251,10 +253,7 @@ class SettingsPage extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Versão 1.0.0',
-                      style: GoogleFonts.poppins(),
-                    ),
+                    Text('Versão 1.0.0', style: GoogleFonts.poppins()),
                     const SizedBox(height: 8),
                     Text(
                       'Um aplicativo para gerenciar suas matérias e atividades acadêmicas.',
@@ -279,9 +278,9 @@ class SettingsPage extends ConsumerWidget {
           icon: Icons.privacy_tip_outlined,
           title: 'Política de Privacidade',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Em desenvolvimento')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Em desenvolvimento')));
           },
         ),
         const SizedBox(height: 8),
@@ -291,9 +290,9 @@ class SettingsPage extends ConsumerWidget {
           icon: Icons.help_outline,
           title: 'Ajuda',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Em desenvolvimento')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Em desenvolvimento')));
           },
         ),
       ],
@@ -347,7 +346,11 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context, ColorScheme theme, WidgetRef ref) {
+  Widget _buildLogoutButton(
+    BuildContext context,
+    ColorScheme theme,
+    WidgetRef ref,
+  ) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -370,9 +373,7 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
-                  ),
+                  style: TextButton.styleFrom(foregroundColor: Colors.red),
                   child: const Text('Sair'),
                 ),
               ],
@@ -382,7 +383,7 @@ class SettingsPage extends ConsumerWidget {
           if (confirm == true && context.mounted) {
             await FirebaseAuth.instance.signOut();
             ref.read(userProvider.notifier).signOut();
-            
+
             if (context.mounted) {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginPage()),

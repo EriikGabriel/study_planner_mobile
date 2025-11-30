@@ -35,16 +35,20 @@ extension CustomColorScheme on ColorScheme {
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: const Color(0xFF2FD1C5),
+  cardColor: Colors.white,
   colorScheme: const ColorScheme.light(
     primary: Color(0xFF2FD1C5),
     onPrimary: Colors.white,
     secondary: Color(0xFF33B0A8),
     onSecondary: Colors.white,
-    surface: Colors.white,
+    // Background (app canvas) and surface (cards) for light mode
+    background: Color(0xFFF5FBFF), // primaryBackground in light
+    surface: Color(0xFFFFFFFF), // secondaryBackground (cards) in light
     onSurface: Colors.black,
     error: Color(0xFFD32F2F),
     onError: Colors.white,
   ),
+  // Keep scaffold background consistent with surface
   scaffoldBackgroundColor: const Color(0xFFF5FBFF),
   textTheme: GoogleFonts.almaraiTextTheme().apply(
     bodyColor: const Color(0xFF00394C),
@@ -56,19 +60,24 @@ final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: const Color(0xFF1ED760),
   fontFamily: 'Momo Signature',
+  cardColor: const Color(0xFF14181B),
   colorScheme: const ColorScheme.dark(
     primary: Color(0xFF1ED760),
     onPrimary: Colors.white,
     secondary: Color(0xFF33B0A8),
     onSecondary: Colors.white,
-    surface: Color.fromARGB(255, 255, 255, 255),
+    // Background (app canvas) and surface (cards) for dark mode
+    background: Color(0xFF1D2428), // primaryBackground in dark
+    surface: Color(0xFF14181B), // secondaryBackground (cards) in dark
     onSurface: Colors.white,
     error: Color(0xFFD32F2F),
     onError: Colors.white,
   ),
-  scaffoldBackgroundColor: Colors.black,
+  // Use the surface color for scaffold background in dark mode as well
+  scaffoldBackgroundColor: const Color(0xFF1D2428),
   textTheme: GoogleFonts.almaraiTextTheme().apply(
-    bodyColor: const Color(0xFF585A66),
-    displayColor: const Color(0xFF585A66),
+    // Default text in dark theme should be white for good contrast
+    bodyColor: Colors.white,
+    displayColor: Colors.white,
   ),
 );

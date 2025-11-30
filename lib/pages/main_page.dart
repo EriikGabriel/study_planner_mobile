@@ -28,7 +28,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   Future<void> _loadSubjects() async {
     setState(() => _isLoading = true);
-    
+
     final user = ref.read(userProvider);
     final email = user?.email;
 
@@ -45,7 +45,11 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   // Páginas correspondentes às abas
   List<Widget> get _pages => [
-    AgendaPage(subjects: _subjects, onRefresh: _loadSubjects, isLoading: _isLoading),
+    AgendaPage(
+      subjects: _subjects,
+      onRefresh: _loadSubjects,
+      isLoading: _isLoading,
+    ),
     const ActivityPage(),
     const Placeholder(), // Notificações
     const SettingsPage(), // Configurações
@@ -165,8 +169,8 @@ class _AgendaPageState extends State<AgendaPage> {
       // Atualiza a semana para a primeira segunda-feira do mês anterior
       final firstDay = DateTime(_currentMonth.year, _currentMonth.month, 1);
       final weekDay = firstDay.weekday;
-      _selectedWeekStart = weekDay == 1 
-          ? firstDay 
+      _selectedWeekStart = weekDay == 1
+          ? firstDay
           : firstDay.add(Duration(days: 8 - weekDay));
     });
   }
@@ -177,16 +181,26 @@ class _AgendaPageState extends State<AgendaPage> {
       // Atualiza a semana para a primeira segunda-feira do mês seguinte
       final firstDay = DateTime(_currentMonth.year, _currentMonth.month, 1);
       final weekDay = firstDay.weekday;
-      _selectedWeekStart = weekDay == 1 
-          ? firstDay 
+      _selectedWeekStart = weekDay == 1
+          ? firstDay
           : firstDay.add(Duration(days: 8 - weekDay));
     });
   }
 
   String _getMonthName() {
     final months = [
-      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
     ];
     return months[_currentMonth.month - 1];
   }
@@ -195,19 +209,27 @@ class _AgendaPageState extends State<AgendaPage> {
     final now = DateTime.now();
     final weekDay = now.weekday;
     final currentMonday = now.subtract(Duration(days: weekDay - 1));
-    
+
     // Compara apenas ano, mês e dia (ignora hora/minuto/segundo)
     return _selectedWeekStart.year == currentMonday.year &&
-           _selectedWeekStart.month == currentMonday.month &&
-           _selectedWeekStart.day == currentMonday.day;
+        _selectedWeekStart.month == currentMonday.month &&
+        _selectedWeekStart.day == currentMonday.day;
   }
 
   List<Map<String, dynamic>> _getWeekDays() {
     return List.generate(7, (index) {
       final day = _selectedWeekStart.add(Duration(days: index));
       final dayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-      final dayValues = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
-      
+      final dayValues = [
+        'SEGUNDA',
+        'TERCA',
+        'QUARTA',
+        'QUINTA',
+        'SEXTA',
+        'SABADO',
+        'DOMINGO',
+      ];
+
       return {
         'day': day.day.toString(),
         'label': dayNames[index],
@@ -275,15 +297,18 @@ class _AgendaPageState extends State<AgendaPage> {
           Row(
             children: [
               IconButton(
-                icon: Icon(
-                  Icons.chevron_left,
-                  color: theme.secondaryText,
-                ),
+                icon: Icon(Icons.chevron_left, color: theme.secondaryText),
                 onPressed: () {
                   setState(() {
-                    _selectedWeekStart = _selectedWeekStart.subtract(const Duration(days: 7));
+                    _selectedWeekStart = _selectedWeekStart.subtract(
+                      const Duration(days: 7),
+                    );
                     // Atualiza o mês exibido se necessário
-                    _currentMonth = DateTime(_selectedWeekStart.year, _selectedWeekStart.month, 1);
+                    _currentMonth = DateTime(
+                      _selectedWeekStart.year,
+                      _selectedWeekStart.month,
+                      1,
+                    );
                   });
                 },
               ),
@@ -294,26 +319,31 @@ class _AgendaPageState extends State<AgendaPage> {
                     scrollDirection: Axis.horizontal,
                     children: [
                       _buildDayCard("Todos", "", _selectedDay == null, null),
-                      ...weekDays.map((day) => _buildDayCard(
-                        day['day']!,
-                        day['label']!,
-                        _selectedDay == day['value'],
-                        day['value']!,
-                      )).toList(),
+                      ...weekDays.map(
+                        (day) => _buildDayCard(
+                          day['day']!,
+                          day['label']!,
+                          _selectedDay == day['value'],
+                          day['value']!,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               IconButton(
-                icon: Icon(
-                  Icons.chevron_right,
-                  color: theme.secondaryText,
-                ),
+                icon: Icon(Icons.chevron_right, color: theme.secondaryText),
                 onPressed: () {
                   setState(() {
-                    _selectedWeekStart = _selectedWeekStart.add(const Duration(days: 7));
+                    _selectedWeekStart = _selectedWeekStart.add(
+                      const Duration(days: 7),
+                    );
                     // Atualiza o mês exibido se necessário
-                    _currentMonth = DateTime(_selectedWeekStart.year, _selectedWeekStart.month, 1);
+                    _currentMonth = DateTime(
+                      _selectedWeekStart.year,
+                      _selectedWeekStart.month,
+                      1,
+                    );
                   });
                 },
               ),
@@ -327,8 +357,8 @@ class _AgendaPageState extends State<AgendaPage> {
             children: [
               Expanded(
                 child: Text(
-                  _selectedDay == null 
-                      ? "Minhas Matérias" 
+                  _selectedDay == null
+                      ? "Minhas Matérias"
                       : _getDayDisplayName(_selectedDay!).replaceAll("📅 ", ""),
                   style: GoogleFonts.poppins(
                     fontSize: 18,
@@ -352,7 +382,9 @@ class _AgendaPageState extends State<AgendaPage> {
                     setState(() {
                       final now = DateTime.now();
                       final weekDay = now.weekday;
-                      _selectedWeekStart = now.subtract(Duration(days: weekDay - 1));
+                      _selectedWeekStart = now.subtract(
+                        Duration(days: weekDay - 1),
+                      );
                       _currentMonth = DateTime(now.year, now.month, 1);
                     });
                   },
@@ -368,33 +400,33 @@ class _AgendaPageState extends State<AgendaPage> {
             child: widget.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : widget.subjects.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.school_outlined,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Nenhuma matéria encontrada',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextButton.icon(
-                              onPressed: widget.onRefresh,
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Recarregar'),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.school_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
                         ),
-                      )
-                    : _buildGroupedSubjectsList(theme),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Nenhuma matéria encontrada',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: widget.onRefresh,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Recarregar'),
+                        ),
+                      ],
+                    ),
+                  )
+                : _buildGroupedSubjectsList(theme),
           ),
         ],
       ),
@@ -404,7 +436,7 @@ class _AgendaPageState extends State<AgendaPage> {
   Widget _buildGroupedSubjectsList(ColorScheme theme) {
     // Agrupa matérias por dia da semana
     final Map<String, List<Map<String, dynamic>>> groupedByDay = {};
-    
+
     for (var subject in widget.subjects) {
       final horarios = subject['horarios'] as List<dynamic>? ?? [];
       if (horarios.isNotEmpty) {
@@ -422,7 +454,7 @@ class _AgendaPageState extends State<AgendaPage> {
       filteredByDay = {
         for (var entry in groupedByDay.entries)
           if (_normalizeDayName(entry.key) == _selectedDay)
-            entry.key: entry.value
+            entry.key: entry.value,
       };
     }
 
@@ -444,10 +476,7 @@ class _AgendaPageState extends State<AgendaPage> {
             const SizedBox(height: 16),
             Text(
               'Nenhuma matéria neste dia',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             TextButton(
@@ -505,30 +534,33 @@ class _AgendaPageState extends State<AgendaPage> {
                 ],
               ),
             ),
-            
+
             // Lista de matérias do dia
             ...materiasNoDia.asMap().entries.map((entry) {
               final index = entry.key;
               final subject = entry.value;
               final horarios = subject['horarios'] as List<dynamic>? ?? [];
-              
+
               String timeDisplay = "Horário não definido";
               if (horarios.isNotEmpty) {
                 final horario = horarios[0];
-                final inicio = horario['inicio']?.toString().substring(0, 5) ?? '';
+                final inicio =
+                    horario['inicio']?.toString().substring(0, 5) ?? '';
                 final fim = horario['fim']?.toString().substring(0, 5) ?? '';
                 final sala = horario['sala'] ?? '';
-                timeDisplay = "$inicio - $fim${sala.isNotEmpty ? ' • $sala' : ''}";
+                timeDisplay =
+                    "$inicio - $fim${sala.isNotEmpty ? ' • $sala' : ''}";
               }
 
               return TaskCard(
                 title: subject['nome'] ?? 'Sem nome',
-                subtitle: "Turma ${subject['turma']} • ${subject['ano']}/${subject['periodo']}",
+                subtitle:
+                    "Turma ${subject['turma']} • ${subject['ano']}/${subject['periodo']}",
                 time: timeDisplay,
                 color: _getColorForIndex(dayIndex * 10 + index),
                 avatars: const [],
               );
-            }).toList(),
+            }),
           ],
         );
       },
@@ -637,9 +669,14 @@ class _AgendaPageState extends State<AgendaPage> {
     return colors[index % colors.length];
   }
 
-  Widget _buildDayCard(String day, String label, bool selected, String? dayValue) {
+  Widget _buildDayCard(
+    String day,
+    String label,
+    bool selected,
+    String? dayValue,
+  ) {
     final bool isTodosButton = dayValue == null;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -650,10 +687,14 @@ class _AgendaPageState extends State<AgendaPage> {
         width: isTodosButton ? 70 : 60,
         margin: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2FD1C5) : Colors.white,
+          color: selected
+              ? const Color(0xFF2FD1C5)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? const Color(0xFF2FD1C5) : const Color(0xFFE0E0E0),
+            color: selected
+                ? const Color(0xFF2FD1C5)
+                : Theme.of(context).dividerColor,
           ),
         ),
         child: Column(
@@ -664,7 +705,9 @@ class _AgendaPageState extends State<AgendaPage> {
               style: GoogleFonts.poppins(
                 fontSize: isTodosButton ? 14 : 20,
                 fontWeight: FontWeight.bold,
-                color: selected ? Colors.white : Colors.black,
+                color: selected
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             if (!isTodosButton) ...[
@@ -673,7 +716,9 @@ class _AgendaPageState extends State<AgendaPage> {
                 label,
                 style: GoogleFonts.poppins(
                   fontSize: 12,
-                  color: selected ? Colors.white70 : Colors.grey[700],
+                  color: selected
+                      ? Theme.of(context).colorScheme.onPrimary.withOpacity(0.9)
+                      : Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ],

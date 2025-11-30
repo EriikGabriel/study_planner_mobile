@@ -209,9 +209,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Text(
                         "Mais que um planner, seu aliado na jornada acadêmica.",
                         textAlign: TextAlign.center,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: 16,
+                          color: secondaryText,
+                        ),
                       ),
                     ],
                   ),
@@ -243,7 +244,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ? "Entrar com"
                             : "Cadastre-se",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF2F394B),
+                          color: primaryText,
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
                         ),

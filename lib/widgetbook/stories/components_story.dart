@@ -1,5 +1,4 @@
-/// Arquivo para estudar padrões de stories mais elaboradas
-/// Este arquivo pode ser expandido com stories de componentes individuais
+library;
 
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
